@@ -1,0 +1,26 @@
+{
+  "name": " ",
+  "version": "0.1.0",
+  "main": "main.js",
+  "dependencies": {
+    "co": "^4.6.0",
+    "electron-compile": "^6.4.2",
+    "fs": "^0.0.1-security",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "electron-compile": "^6.4.2",
+    "electron-prebuilt-compile": "1.8.4",
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-winstaller": "^2.6.4",
+    "protocol": "^0.1.4"
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "package2": "electron-packager . --asar --platform=win32 --arch=ia32 --electron-version=1.8.4 --overwrite  --ignore=.gitignore",
+    "package3": "electron-packager . --asar --platform=darwin --arch=x64 --electron-version=1.8.4 --overwrite  --ignore=.gitignore"
+  }
+}
