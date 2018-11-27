@@ -210,6 +210,8 @@ const infos  = [
   name:"付费", type:4, timestamp:"1536887889666", userkey:"6d7b0c17c6ff920f29439b63f2225d21", page: 1, loading: true
 },{
   name:"热门", type:5, timestamp:"1536901796879", userkey:"7052e7241e6aafaa2780c545e7caac41", page: 1, loading: true
+},{
+  name:"声优", type:-6, timestamp:"1536901796879", userkey:"7052e7241e6aafaa2780c545e7caac41", page: 1, loading: true
 }]
 
 
@@ -262,6 +264,37 @@ function gen2(){
     });
 }
 
+
+function gen4(){
+    $(".loading").css("display", "flex");
+    $(".loading img").attr("src", "loading.gif");
+    $(".swiper-slide ").eq(0).find(".list").find(".next").remove();
+    let html = `<div class="next">已全部加载完成</div>`;
+    $(".swiper-slide ").eq(0).find(".list").append($(html));
+    $(".loading").hide();
+    
+    co(function*(){
+        let data = yield getHomeList(page, -6);
+
+        $(".loading").hide();
+        let list = data.data.list;
+        console.log(list)
+        if(!list || list.length == 0) {
+            return;
+        }
+        let html = "<div style='height: 80px; width: 100%;'></div>";
+        list.forEach((item, i)=>{
+              if(item.AlbumList.length > 0){
+                  html += `<div class="item"><img onclick="gen3('${item.useridx}', '${item.myname}')" src="${item.AlbumList[0].imgUrl}"><div onclick="gen3('${item.useridx}')" class="name">${item.myname} <br/> <div onclick="gen3(${item.useridx})">ID:${item.useridx}</div></div><div onclick="downloadAnchorInfo('${item.useridx}', this)" class="download">下载</div></div>`;
+              }
+        });
+        
+        $(".swiper-slide ").eq(5).find(".list").find(".next").remove();
+         html += `<div class="next" onclick="gen2()">点击加载下一页</div>`
+        $(".swiper-slide ").eq(5).find(".list").append($(html));
+    });
+}
+
 function gen3(idx, myname){
     $(".loading").css("display", "flex");
     $(".loading img").attr("src", "loading.gif");
@@ -304,6 +337,20 @@ function downloadAnchorInfo(idx, obj){
                 downloadVideo(v.imgUrl, dir)
            });
         }
+        if(item && item.data){
+           let dir = "audios"
+           if(!fs.existsSync(dir)){  
+              fs.mkdirSync(dir);
+           }
+           dir = dir + "/" + idx;
+           if(!fs.existsSync(dir)){  
+              fs.mkdirSync(dir);
+           }
+
+           if(item && item.data.anchorAudio && item.data.anchorAudio.url){
+                downloadVideo(item.data.anchorAudio.url, dir)
+           }
+        }
         let item2 = yield getMyVideo(idx)
         if(item2 && item2.data){
            let dir = "videos"
@@ -324,8 +371,9 @@ function downloadAnchorInfo(idx, obj){
 
 function getHomeList(pges, type = 0){
     type = 95 + type;
+    console.log(`https://catchatapi.mliao.com.cn/zh-cn/Home/getHomeList?pageSize=20&pages=${pges}&pages=${pges}&type=${type}&useridx=60103771`);
     var options = {
-      url: `https://catchatapi.mliao.com.cn/zh-cn/Home/getHomeList?pageSize=300&pges=${pges}&pages=${pges}&type=${type}&useridx=60103771`,
+      url: `https://catchatapi.mliao.com.cn/zh-cn/Home/getHomeList?pageSize=20&pages=${pges}&pages=${pges}&type=${type}&useridx=60103771`,
       headers: {
         "devicetype": "android",
         "channelid":  "ML003",
@@ -457,6 +505,7 @@ function init(){
    gen(3);
    gen(4);
    gen2();
+   gen4();
 }
 
 function more(){
